@@ -1,0 +1,2 @@
+pgcrypt>=0.0.4
+psycopg>=3.2.9
