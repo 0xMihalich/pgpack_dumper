@@ -1,2 +1,3 @@
-pgcrypt>=0.0.4
+pgcopylib==0.0.3
+pgcrypt==0.0.4
 psycopg>=3.2.9

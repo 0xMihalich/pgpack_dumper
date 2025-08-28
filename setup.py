@@ -4,7 +4,6 @@ from setuptools import (
     setup,
 )
 
-
 shutil.rmtree("build", ignore_errors=True)
 shutil.rmtree("pgcrypt.egg-info", ignore_errors=True)
 
@@ -13,7 +12,7 @@ with open(file="README.md", encoding="utf-8") as f:
 
 setup(
     name="pgcrypt_dumper",
-    version="0.0.1",
+    version="0.0.2",
     packages=find_packages(),
     author="0xMihalich",
     author_email="bayanmobile87@gmail.com",
@@ -25,4 +24,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     zip_safe=False,
+    package_data={
+        "pgcrypt_dumper.queryes": ["*.sql"],
+    },
+    include_package_data=True,
 )
