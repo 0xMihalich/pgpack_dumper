@@ -2,6 +2,8 @@ from io import (
     BufferedReader,
     BufferedWriter,
 )
+from logging import Logger
+from types import MethodType
 
 from pgcrypt import (
     CompressionMethod,
@@ -12,10 +14,13 @@ from psycopg import (
     Connection,
     Cursor,
 )
+from sqlparse import format as sql_format
 
 from .copy import CopyBuffer
 from .connector import PGConnector
 from .errors import PGCryptDumperError
+from .logger import DumperLogger
+from .multiquery import chunk_query
 
 
 class PGCryptDumper:
@@ -25,6 +30,7 @@ class PGCryptDumper:
         self,
         connector: PGConnector,
         compression_method: CompressionMethod = CompressionMethod.LZ4,
+        logger: Logger = DumperLogger(),
     ) -> None:
         """Class initialization."""
 
@@ -35,9 +41,53 @@ class PGCryptDumper:
             )
             self.cursor: Cursor = self.connect.cursor()
             self.compression_method: CompressionMethod = compression_method
-            self.copy_buffer: CopyBuffer = CopyBuffer(self.cursor)
+            self.logger = logger
+            self.copy_buffer: CopyBuffer = CopyBuffer(self.cursor, self.logger)
         except Exception as error:
+            logger.error(error)
             raise PGCryptDumperError(error)
+
+        self.logger.info(
+            f"PGCryptDumper initialized for host {self.connector.host}."
+        )
+
+    @staticmethod
+    def multiquery(dump_method: MethodType):
+        """Multiquery decorator."""
+
+        def wrapper(*args, **kwargs):
+
+            first_part: list[str]
+            second_part: list[str]
+            self: PGCryptDumper = args[0]
+            cursor: Cursor = kwargs.get("cursor_src") or self.cursor
+            query: str = kwargs.get("query_src") or kwargs.get("query")
+            first_part, second_part = chunk_query(self.query_formatter(query))
+            part: int = 0
+            if first_part:
+                self.logger.info("Multiquery detected.")
+                for query in first_part:
+                    self.logger.info(f"Execute query {part}.")
+                    cursor.execute(query)
+                    part += 1
+                self.logger.info(f"Execute query {part} (copy method).")
+            for key in ("query", "query_src"):
+                if key in kwargs:
+                    kwargs[key] = second_part.pop(0)
+                    break
+            dump_method(*args, **kwargs)
+            for query in second_part:
+                self.logger.info(f"Execute query {part}.")
+                cursor.execute(query)
+
+        return wrapper
+
+    def query_formatter(self, query: str) -> str | None:
+        """Reformat query."""
+
+        if not query:
+            return
+        return sql_format(sql=query, strip_comments=True).strip().strip(";")
 
     def make_buffer_obj(
         self,
@@ -47,14 +97,19 @@ class PGCryptDumper:
     ) -> CopyBuffer:
         """Make new buffer object for read."""
 
+        cursor = cursor or Connection.connect(
+            **self.connector._asdict()
+        ).cursor()
+        host = cursor.connection.info.host
+        self.logger.info(f"Make new cursor object for host {host}.")
+
         return CopyBuffer(
-            cursor or Connection.connect(
-                **self.connector._asdict()
-            ).cursor(),
+            cursor,
             query,
             table_name,
         )
 
+    @multiquery
     def read_dump(
         self,
         fileobj: BufferedWriter,
@@ -85,6 +140,7 @@ class PGCryptDumper:
         self.copy_buffer.copy_from(pgcrypt.pgcopy_compressor)
         self.connect.commit()
 
+    @multiquery
     def write_between(
         self,
         table_dest: str,

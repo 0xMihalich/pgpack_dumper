@@ -12,14 +12,18 @@ from .copy import CopyBuffer
 from .dumper import PGCryptDumper
 from .errors import (
     CopyBufferError,
+    CopyBufferObjectError,
     CopyBufferTableNotDefined,
     PGCryptDumperError,
 )
+from .version import __version__
 
 __all__ = (
+    "__version__",
     "CompressionMethod",
     "CopyBuffer",
     "CopyBufferError",
+    "CopyBufferObjectError",
     "CopyBufferTableNotDefined",
     "PGConnector",
     "PGCopy",
@@ -29,4 +33,3 @@ __all__ = (
     "PGCryptWriter",
 )
 __author__ = "0xMihalich"
-__version__ = "0.0.2"

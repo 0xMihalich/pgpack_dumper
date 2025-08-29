@@ -1,0 +1,1 @@
+select relkind from pg_class where oid = '{table_name}'::regclass;
