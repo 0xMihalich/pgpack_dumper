@@ -59,26 +59,35 @@ class PGCryptDumper:
 
             first_part: list[str]
             second_part: list[str]
+
             self: PGCryptDumper = args[0]
             cursor: Cursor = kwargs.get("cursor_src") or self.cursor
             query: str = kwargs.get("query_src") or kwargs.get("query")
-            first_part, second_part = chunk_query(self.query_formatter(query))
             part: int = 0
+            first_part, second_part = chunk_query(self.query_formatter(query))
+
             if first_part:
                 self.logger.info("Multiquery detected.")
+
                 for query in first_part:
                     self.logger.info(f"Execute query {part}.")
                     cursor.execute(query)
                     part += 1
-                self.logger.info(f"Execute query {part} (copy method).")
-            for key in ("query", "query_src"):
-                if key in kwargs:
-                    kwargs[key] = second_part.pop(0)
-                    break
+
+            if second_part:
+                for key in ("query", "query_src"):
+                    if key in kwargs:
+                        kwargs[key] = second_part.pop(0)
+                        break
+
+            self.logger.info(f"Execute query {part or ''}(copy method).")
             dump_method(*args, **kwargs)
-            for query in second_part:
-                self.logger.info(f"Execute query {part}.")
-                cursor.execute(query)
+
+            if second_part:
+                for query in second_part:
+                    part += 1
+                    self.logger.info(f"Execute query {part}.")
+                    cursor.execute(query)
 
         return wrapper
 

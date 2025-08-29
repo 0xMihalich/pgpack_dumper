@@ -1,5 +1,8 @@
-def chunk_query(query: str) -> tuple[list[str]]:
+def chunk_query(query: str | None) -> tuple[list[str]]:
     """Chunk multiquery to queryes."""
+
+    if not query:
+        return [], []
 
     first_part: list[str] = [
         part.strip()
