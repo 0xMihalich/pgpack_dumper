@@ -22,7 +22,7 @@ def root_dir() -> str:
 
 
 class DumperLogger(Logger):
-    """PGCryptDumper logger."""
+    """PGPackDumper logger."""
 
     def __init__(
             self,
@@ -31,14 +31,14 @@ class DumperLogger(Logger):
     ) -> None:
         """Class initialize."""
 
-        super().__init__("PGCryptDumper")
+        super().__init__("PGPackDumper")
 
         self.fmt = (
             f"%(asctime)s | %(levelname)-8s | ver {__version__}"
             "| %(funcName)s-%(filename)s-%(lineno)04d <%(message)s>"
         )
         self.setLevel(level)
-        self.log_path = f"{root_dir()}/pgcrypt_logs"
+        self.log_path = f"{root_dir()}/pgpack_logs"
         makedirs(self.log_path, exist_ok=True)
 
         formatter = Formatter(

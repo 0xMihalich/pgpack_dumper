@@ -5,10 +5,10 @@ from io import (
 from logging import Logger
 from types import MethodType
 
-from pgcrypt import (
+from pgpack import (
     CompressionMethod,
-    PGCryptReader,
-    PGCryptWriter,
+    PGPackReader,
+    PGPackWriter,
 )
 from psycopg import (
     Connection,
@@ -18,13 +18,13 @@ from sqlparse import format as sql_format
 
 from .copy import CopyBuffer
 from .connector import PGConnector
-from .errors import PGCryptDumperError
+from .errors import PGPackDumperError
 from .logger import DumperLogger
 from .multiquery import chunk_query
 
 
-class PGCryptDumper:
-    """Class for read and write PGCrypt format."""
+class PGPackDumper:
+    """Class for read and write PGPack format."""
 
     def __init__(
         self,
@@ -45,10 +45,10 @@ class PGCryptDumper:
             self.copy_buffer: CopyBuffer = CopyBuffer(self.cursor, self.logger)
         except Exception as error:
             logger.error(error)
-            raise PGCryptDumperError(error)
+            raise PGPackDumperError(error)
 
         self.logger.info(
-            f"PGCryptDumper initialized for host {self.connector.host}."
+            f"PGPackDumper initialized for host {self.connector.host}."
         )
 
     @staticmethod
@@ -60,7 +60,7 @@ class PGCryptDumper:
             first_part: list[str]
             second_part: list[str]
 
-            self: PGCryptDumper = args[0]
+            self: PGPackDumper = args[0]
             cursor: Cursor = kwargs.get("cursor_src") or self.cursor
             query: str = kwargs.get("query_src") or kwargs.get("query")
             part: int = 0
@@ -125,12 +125,12 @@ class PGCryptDumper:
         query: str | None = None,
         table_name: str | None = None,
     ) -> None:
-        """Read PGCrypt dump from PostgreSQL/GreenPlum."""
+        """Read PGPack dump from PostgreSQL/GreenPlum."""
 
-        pgcrypt = PGCryptWriter(fileobj, self.compression_method)
+        pgpack = PGPackWriter(fileobj, self.compression_method)
         self.copy_buffer.query = query
         self.copy_buffer.table_name = table_name
-        pgcrypt.write(
+        pgpack.write(
             self.copy_buffer.metadata,
             self.copy_buffer,
         )
@@ -140,13 +140,13 @@ class PGCryptDumper:
         fileobj: BufferedReader,
         table_name: str,
     ) -> None:
-        """Write PGCrypt dump into PostgreSQL/GreenPlum."""
+        """Write PGPack dump into PostgreSQL/GreenPlum."""
 
         fileobj.seek(0)
-        pgcrypt = PGCryptReader(fileobj)
-        pgcrypt.pgcopy_compressor.seek(0)
+        pgpack = PGPackReader(fileobj)
+        pgpack.pgcopy_compressor.seek(0)
         self.copy_buffer.table_name = table_name
-        self.copy_buffer.copy_from(pgcrypt.pgcopy_compressor)
+        self.copy_buffer.copy_from(pgpack.pgcopy_compressor)
         self.connect.commit()
 
     @multiquery

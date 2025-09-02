@@ -1,16 +1,16 @@
-# PGCryptDumper
+# PGPackDumper
 
-Library for read and write PGCrypt format between PostgreSQL and file
+Library for read and write PGPack format between PostgreSQL and file
 
 ## Examples
 
 ### Initialization
 
 ```python
-from pgcrypt_dumper import (
+from pgpack_dumper import (
     CompressionMethod,
     PGConnector,
-    PGCryptDumper,
+    PGPackDumper,
 )
 
 connector = PGConnector(
@@ -21,7 +21,7 @@ connector = PGConnector(
     port = <your port>,
 )
 
-dumper = PGCryptDumper(
+dumper = PGPackDumper(
     connector=connector,
     compression_method=CompressionMethod.LZ4,  # or CompressionMethod.ZSTD or CompressionMethod.NONE
 )
@@ -30,10 +30,10 @@ dumper = PGCryptDumper(
 ### Read dump from PostgreSQL into file
 
 ```python
-file_name = "pgcrypt.lz4"
+file_name = "pgpack.lz4"
 # you need define one of parameter query or table_name
 query = "select ..."  # some sql query
-table_name = "public.test_table"  # some table
+table_name = "public.test_table"  # or some table
 
 with open(file_name, "wb") as fileobj:
     dumper.read_dump(
@@ -46,7 +46,7 @@ with open(file_name, "wb") as fileobj:
 ### Write dump from file into PostgreSQL
 
 ```python
-file_name = "pgcrypt.lz4"
+file_name = "pgpack.lz4"
 # you need define one of parameter table_name
 table_name = "public.test_table"  # some table
 
@@ -86,7 +86,7 @@ connector_src = PGConnector(
     port = <port src>,
 )
 
-dumper_src = PGCryptDumper(connector=connector_src)
+dumper_src = PGPackDumper(connector=connector_src)
 
 table_dest = "public.test_table_write"  # some table for write
 table_src = "public.test_table_read"  # some table for read
@@ -100,16 +100,16 @@ dumper.write_between(
 )
 ```
 
-### Open PGCrypt file format
+### Open PGPack file format
 
-Get info from my another repository https://github.com/0xMihalich/pgcrypt
+Get info from my another repository https://github.com/0xMihalich/pgpack
 
 ## Installation
 
 ### From pip
 
 ```bash
-pip install pgcrypt_dumper
+pip install pgpack_dumper
 ```
 
 ### From local directory
@@ -121,5 +121,5 @@ pip install .
 ### From git
 
 ```bash
-pip install git+https://github.com/0xMihalich/pgcrypt_dumper
+pip install git+https://github.com/0xMihalich/pgpack_dumper
 ```

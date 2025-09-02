@@ -1,1 +1,1 @@
-recursive-include pgcrypt_dumper *.sql
+recursive-include pgpack_dumper *.sql

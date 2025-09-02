@@ -1,20 +1,20 @@
-"""Library for read and write PGCrypt format between PostgreSQL and file."""
+"""Library for read and write PGPack format between PostgreSQL and file."""
 
 from pgcopylib import PGCopy
-from pgcrypt import (
+from pgpack import (
     CompressionMethod,
-    PGCryptReader,
-    PGCryptWriter,
+    PGPackReader,
+    PGPackWriter,
 )
 
 from .connector import PGConnector
 from .copy import CopyBuffer
-from .dumper import PGCryptDumper
+from .dumper import PGPackDumper
 from .errors import (
     CopyBufferError,
     CopyBufferObjectError,
     CopyBufferTableNotDefined,
-    PGCryptDumperError,
+    PGPackDumperError,
 )
 from .version import __version__
 
@@ -27,9 +27,9 @@ __all__ = (
     "CopyBufferTableNotDefined",
     "PGConnector",
     "PGCopy",
-    "PGCryptDumper",
-    "PGCryptDumperError",
-    "PGCryptReader",
-    "PGCryptWriter",
+    "PGPackDumper",
+    "PGPackDumperError",
+    "PGPackReader",
+    "PGPackWriter",
 )
 __author__ = "0xMihalich"

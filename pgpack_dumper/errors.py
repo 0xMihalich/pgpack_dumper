@@ -10,5 +10,5 @@ class CopyBufferTableNotDefined(ValueError):
     """Destination table not defined."""
 
 
-class PGCryptDumperError(Exception):
-    """PGCryptDumper base error."""
+class PGPackDumperError(Exception):
+    """PGPackDumper base error."""
