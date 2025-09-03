@@ -1,5 +1,3 @@
-from json import dumps
-
 from psycopg import Cursor
 
 from .query_template import query_template
@@ -30,9 +28,9 @@ def read_metadata(
         table_name=table_name,
     ))
 
-    metadata: list[list[int, list[int, str]]] = cursor.fetchone()[0]
+    metadata: bytes = cursor.fetchone()[0]
 
     if query:
         cursor.execute(f"drop table if exists {table_name};")
 
-    return dumps(metadata).encode("utf-8")
+    return metadata

@@ -1,5 +1,10 @@
 # Version History
 
+## 0.1.2
+
+* Change metadata structure
+* Update requirements.txt
+
 ## 0.1.1
 
 * Rename project to pgpack_dumper

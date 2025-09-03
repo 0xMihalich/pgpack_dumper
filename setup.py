@@ -12,7 +12,7 @@ with open(file="README.md", encoding="utf-8") as f:
 
 setup(
     name="pgpack_dumper",
-    version="0.1.1",
+    version="0.1.2",
     packages=find_packages(),
     author="0xMihalich",
     author_email="bayanmobile87@gmail.com",
