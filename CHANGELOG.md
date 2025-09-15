@@ -1,5 +1,10 @@
 # Version History
 
+## 0.1.2.1
+
+* Add array nested into metadata
+* Update requirements.txt
+
 ## 0.1.2
 
 * Change metadata structure
