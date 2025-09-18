@@ -70,12 +70,13 @@ class PGPackDumper:
             query: str = kwargs.get("query_src") or kwargs.get("query")
             part: int = 0
             first_part, second_part = chunk_query(self.query_formatter(query))
+            total_prts = len(sum((first_part, second_part), [])) or 1
 
             if first_part:
                 self.logger.info("Multiquery detected.")
 
                 for query in first_part:
-                    self.logger.info(f"Execute query {part}.")
+                    self.logger.info(f"Execute query {part}/{total_prts}")
                     cursor.execute(query)
                     part += 1
 
@@ -85,13 +86,15 @@ class PGPackDumper:
                         kwargs[key] = second_part.pop(0)
                         break
 
-            self.logger.info(f"Execute query {part or ''}(copy method).")
+            self.logger.info(
+                f"Execute query {part or 1}/{total_prts}[copy method]"
+            )
             dump_method(*args, **kwargs)
 
             if second_part:
                 for query in second_part:
                     part += 1
-                    self.logger.info(f"Execute query {part}.")
+                    self.logger.info(f"Execute query {part}/{total_prts}")
                     cursor.execute(query)
 
         return wrapper
