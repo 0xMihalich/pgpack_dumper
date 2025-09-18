@@ -3,6 +3,7 @@
 ## 0.1.2.1
 
 * Add array nested into metadata
+* Add attribute version
 * Update requirements.txt
 * Change initialized message to log
 
