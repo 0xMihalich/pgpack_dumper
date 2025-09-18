@@ -6,6 +6,7 @@
 * Add attribute version
 * Update requirements.txt
 * Change initialized message to log
+* Change multiquery log
 
 ## 0.1.2
 
