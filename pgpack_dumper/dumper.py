@@ -68,7 +68,7 @@ class PGPackDumper:
             self: PGPackDumper = args[0]
             cursor: Cursor = kwargs.get("cursor_src") or self.cursor
             query: str = kwargs.get("query_src") or kwargs.get("query")
-            part: int = 0
+            part: int = 1
             first_part, second_part = chunk_query(self.query_formatter(query))
             total_prts = len(sum((first_part, second_part), [])) or 1
 
@@ -87,7 +87,7 @@ class PGPackDumper:
                         break
 
             self.logger.info(
-                f"Execute query {part or 1}/{total_prts}[copy method]"
+                f"Execute query {part}/{total_prts}[copy method]"
             )
             dump_method(*args, **kwargs)
 
