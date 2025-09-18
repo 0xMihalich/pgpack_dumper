@@ -47,8 +47,10 @@ class PGPackDumper:
             logger.error(error)
             raise PGPackDumperError(error)
 
+        ver = self.connect.info.server_version
         self.logger.info(
-            f"PGPackDumper initialized for host {self.connector.host}."
+            f"PGPackDumper initialized for host {self.connector.host}"
+            f"[version {ver // 10000}.{ver % 1000}]"
         )
 
     @staticmethod

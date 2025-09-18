@@ -4,6 +4,7 @@
 
 * Add array nested into metadata
 * Update requirements.txt
+* Change initialized message to log
 
 ## 0.1.2
 
