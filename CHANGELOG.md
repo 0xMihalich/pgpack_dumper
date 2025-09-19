@@ -4,6 +4,7 @@
 
 * Add array nested into metadata
 * Add attribute version
+* Add more error classes
 * Update requirements.txt
 * Change initialized message to log
 * Change multiquery log

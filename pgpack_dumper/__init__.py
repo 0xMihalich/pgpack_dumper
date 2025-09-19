@@ -15,8 +15,12 @@ from .errors import (
     CopyBufferObjectError,
     CopyBufferTableNotDefined,
     PGPackDumperError,
+    PGPackDumperReadError,
+    PGPackDumperWriteError,
+    PGPackDumperWriteBetweenError,
 )
 from .version import __version__
+
 
 __all__ = (
     "__version__",
@@ -29,6 +33,9 @@ __all__ = (
     "PGCopy",
     "PGPackDumper",
     "PGPackDumperError",
+    "PGPackDumperReadError",
+    "PGPackDumperWriteError",
+    "PGPackDumperWriteBetweenError",
     "PGPackReader",
     "PGPackWriter",
 )

@@ -18,7 +18,12 @@ from sqlparse import format as sql_format
 
 from .copy import CopyBuffer
 from .connector import PGConnector
-from .errors import PGPackDumperError
+from .errors import (
+    PGPackDumperError,
+    PGPackDumperReadError,
+    PGPackDumperWriteError,
+    PGPackDumperWriteBetweenError,
+)
 from .logger import DumperLogger
 from .multiquery import chunk_query
 
@@ -135,13 +140,17 @@ class PGPackDumper:
     ) -> None:
         """Read PGPack dump from PostgreSQL/GreenPlum."""
 
-        pgpack = PGPackWriter(fileobj, self.compression_method)
-        self.copy_buffer.query = query
-        self.copy_buffer.table_name = table_name
-        pgpack.write(
-            self.copy_buffer.metadata,
-            self.copy_buffer,
-        )
+        try:
+            pgpack = PGPackWriter(fileobj, self.compression_method)
+            self.copy_buffer.query = query
+            self.copy_buffer.table_name = table_name
+            pgpack.write(
+                self.copy_buffer.metadata,
+                self.copy_buffer,
+            )
+        except Exception as error:
+            self.logger.error(error)
+            raise PGPackDumperReadError(error)
 
     def write_dump(
         self,
@@ -149,13 +158,16 @@ class PGPackDumper:
         table_name: str,
     ) -> None:
         """Write PGPack dump into PostgreSQL/GreenPlum."""
-
-        fileobj.seek(0)
-        pgpack = PGPackReader(fileobj)
-        pgpack.pgcopy_compressor.seek(0)
-        self.copy_buffer.table_name = table_name
-        self.copy_buffer.copy_from(pgpack.pgcopy_compressor)
-        self.connect.commit()
+        try:
+            fileobj.seek(0)
+            pgpack = PGPackReader(fileobj)
+            pgpack.pgcopy_compressor.seek(0)
+            self.copy_buffer.table_name = table_name
+            self.copy_buffer.copy_from(pgpack.pgcopy_compressor)
+            self.connect.commit()
+        except Exception as error:
+            self.logger.error(error)
+            raise PGPackDumperWriteError(error)
 
     @multiquery
     def write_between(
@@ -167,11 +179,15 @@ class PGPackDumper:
     ) -> None:
         """Write from PostgreSQL/GreenPlum into PostgreSQL/GreenPlum."""
 
-        source_copy_buffer = self.make_buffer_obj(
-            cursor=cursor_src,
-            query=query_src,
-            table_name=table_src,
-        )
-        self.copy_buffer.table_name = table_dest
-        self.copy_buffer.copy_between(source_copy_buffer)
-        self.connect.commit()
+        try:
+            source_copy_buffer = self.make_buffer_obj(
+                cursor=cursor_src,
+                query=query_src,
+                table_name=table_src,
+            )
+            self.copy_buffer.table_name = table_dest
+            self.copy_buffer.copy_between(source_copy_buffer)
+            self.connect.commit()
+        except Exception as error:
+            self.logger.error(error)
+            raise PGPackDumperWriteBetweenError(error)

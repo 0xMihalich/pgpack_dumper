@@ -12,3 +12,15 @@ class CopyBufferTableNotDefined(ValueError):
 
 class PGPackDumperError(Exception):
     """PGPackDumper base error."""
+
+
+class PGPackDumperReadError(PGPackDumperError):
+    """PGPackDumper read error."""
+
+
+class PGPackDumperWriteError(PGPackDumperError):
+    """PGPackDumper write error."""
+
+
+class PGPackDumperWriteBetweenError(PGPackDumperWriteError):
+    """PGPackDumper write between error."""

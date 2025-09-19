@@ -34,7 +34,7 @@ class DumperLogger(Logger):
         super().__init__("PGPackDumper")
 
         self.fmt = (
-            f"%(asctime)s | %(levelname)-8s | ver {__version__}"
+            f"%(asctime)s | %(levelname)-8s | ver {__version__} "
             "| %(funcName)s-%(filename)s-%(lineno)04d <%(message)s>"
         )
         self.setLevel(level)
