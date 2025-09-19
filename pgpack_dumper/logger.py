@@ -16,9 +16,12 @@ from .version import __version__
 def root_dir() -> str:
     """Get project directory."""
 
-    import __main__
+    try:
+        import __main__
 
-    return dirname(__main__.__file__)
+        return dirname(__main__.__file__)
+    except AttributeError:
+        return ""
 
 
 class DumperLogger(Logger):

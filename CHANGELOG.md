@@ -1,5 +1,9 @@
 # Version History
 
+## 0.1.2.2
+
+* Hotfix root_dir() function
+
 ## 0.1.2.1
 
 * Add array nested into metadata
